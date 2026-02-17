@@ -3,29 +3,23 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Login + Mini Games</title>
+<title>Ultimate Games Hub</title>
 
 <style>
 body{
 margin:0;
 font-family:Arial;
-background:#0f2027;
+background:#111;
 color:white;
 text-align:center;
 }
-.container{
-margin-top:100px;
-}
-input{
-padding:10px;
-margin:10px;
+input,button{
+padding:8px;
+margin:5px;
 border:none;
 border-radius:5px;
 }
 button{
-padding:10px 20px;
-border:none;
-border-radius:5px;
 background:#00f2fe;
 cursor:pointer;
 }
@@ -34,126 +28,130 @@ background:#ff5733;
 color:white;
 }
 .hidden{display:none;}
-.game-box{
-margin:20px;
-padding:20px;
-background:#1c1c1c;
-border-radius:10px;
+canvas{
+background:#222;
+margin-top:10px;
+border:2px solid white;
 }
 </style>
 </head>
 
 <body>
 
-<!-- LOGIN PAGE -->
-<div id="loginPage" class="container">
-<h1>Login Page</h1>
+<!-- LOGIN -->
+<div id="loginPage">
+<h1>Login</h1>
 <input type="text" id="username" placeholder="Username"><br>
 <input type="password" id="password" placeholder="Password"><br>
 <button onclick="login()">Submit</button>
 <button onclick="resetForm()">Reset</button>
-<p id="message"></p>
+<p id="msg"></p>
 </div>
 
 <!-- GAME PAGE -->
 <div id="gamePage" class="hidden">
-
 <h1>Welcome Harshit 🎮</h1>
 
-<!-- GAME 1 Guess Number -->
-<div class="game-box">
-<h2>Game 1: Guess Number (1-10)</h2>
-<input type="number" id="guess">
-<button onclick="checkGuess()">Guess</button>
-<p id="result1"></p>
-</div>
+<h2>🚗 Car Racing Game</h2>
+<canvas id="carGame" width="300" height="400"></canvas>
+<p>Use Left & Right Arrow Keys</p>
 
-<!-- GAME 2 Counter -->
-<div class="game-box">
-<h2>Game 2: Click Counter</h2>
-<p id="count">0</p>
-<button onclick="increase()">Click Me</button>
-</div>
-
-<!-- GAME 3 Rock Paper Scissors -->
-<div class="game-box">
-<h2>Game 3: Rock Paper Scissors</h2>
-<button onclick="rps('rock')">Rock</button>
-<button onclick="rps('paper')">Paper</button>
-<button onclick="rps('scissors')">Scissors</button>
-<p id="result3"></p>
-</div>
-
-<!-- GAME 4 Math Quiz -->
-<div class="game-box">
-<h2>Game 4: Math Quiz (5 + 3 = ?)</h2>
-<input type="number" id="mathAns">
-<button onclick="checkMath()">Submit</button>
-<p id="result4"></p>
-</div>
+<h2>🔫 Shooting Game</h2>
+<canvas id="shootGame" width="300" height="400"></canvas>
+<p>Click to shoot the moving target</p>
 
 </div>
 
 <script>
 
+/* LOGIN SYSTEM */
 function login(){
-let user=document.getElementById("username").value;
-let pass=document.getElementById("password").value;
+let u=document.getElementById("username").value;
+let p=document.getElementById("password").value;
 
-if(user==="Harshit" && pass==="6394"){
+if(u==="Harshit" && p==="6394"){
 document.getElementById("loginPage").style.display="none";
 document.getElementById("gamePage").style.display="block";
+startCarGame();
+startShootGame();
 }else{
-document.getElementById("message").innerHTML="Wrong Username or Password ❌";
+document.getElementById("msg").innerHTML="Wrong Username or Password ❌";
 }
 }
 
 function resetForm(){
 document.getElementById("username").value="";
 document.getElementById("password").value="";
-document.getElementById("message").innerHTML="";
+document.getElementById("msg").innerHTML="";
 }
 
-let random=Math.floor(Math.random()*10)+1;
-function checkGuess(){
-let guess=document.getElementById("guess").value;
-if(guess==random){
-document.getElementById("result1").innerHTML="Correct 🎉";
-}else{
-document.getElementById("result1").innerHTML="Try Again ❌";
+/* CAR RACING GAME */
+let carCanvas=document.getElementById("carGame");
+let ctx=carCanvas.getContext("2d");
+let carX=130;
+let obstacleY=0;
+let obstacleX=Math.random()*250;
+
+function startCarGame(){
+setInterval(updateCarGame,30);
+}
+
+function updateCarGame(){
+ctx.clearRect(0,0,300,400);
+
+ctx.fillStyle="red";
+ctx.fillRect(carX,350,40,40);
+
+ctx.fillStyle="yellow";
+ctx.fillRect(obstacleX,obstacleY,40,40);
+
+obstacleY+=5;
+if(obstacleY>400){
+obstacleY=0;
+obstacleX=Math.random()*250;
+}
+
+if(carX<obstacleX+40 &&
+carX+40>obstacleX &&
+350<obstacleY+40 &&
+350+40>obstacleY){
+alert("Game Over 🚗");
+obstacleY=0;
 }
 }
 
-let count=0;
-function increase(){
-count++;
-document.getElementById("count").innerHTML=count;
+document.addEventListener("keydown",function(e){
+if(e.key==="ArrowLeft" && carX>0){carX-=15;}
+if(e.key==="ArrowRight" && carX<260){carX+=15;}
+});
+
+/* SHOOTING GAME */
+let shootCanvas=document.getElementById("shootGame");
+let sctx=shootCanvas.getContext("2d");
+let targetX=0;
+
+function startShootGame(){
+setInterval(updateShootGame,30);
+shootCanvas.addEventListener("click",shoot);
 }
 
-function rps(user){
-let choices=["rock","paper","scissors"];
-let comp=choices[Math.floor(Math.random()*3)];
-if(user===comp){
-document.getElementById("result3").innerHTML="Draw 😐";
-}
-else if(
-(user==="rock" && comp==="scissors")||
-(user==="paper" && comp==="rock")||
-(user==="scissors" && comp==="paper")
-){
-document.getElementById("result3").innerHTML="You Win 🎉";
-}
-else{
-document.getElementById("result3").innerHTML="Computer Wins 🤖";
-}
+function updateShootGame(){
+sctx.clearRect(0,0,300,400);
+sctx.fillStyle="lime";
+sctx.beginPath();
+sctx.arc(targetX,200,20,0,Math.PI*2);
+sctx.fill();
+targetX+=3;
+if(targetX>300) targetX=0;
 }
 
-function checkMath(){
-let ans=document.getElementById("mathAns").value;
-if(ans==8){
-document.getElementById("result4").innerHTML="Correct ✅";
-}else{
-document.getElementById("result4").innerHTML="Wrong ❌";
+function shoot(e){
+let rect=shootCanvas.getBoundingClientRect();
+let mouseX=e.clientX-rect.left;
+let mouseY=e.clientY-rect.top;
+
+if(Math.abs(mouseX-targetX)<20 && Math.abs(mouseY-200)<20){
+alert("Hit 🎯");
 }
 }
 
