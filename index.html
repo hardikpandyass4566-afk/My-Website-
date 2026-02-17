@@ -1,35 +1,30 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>PUBG Style Survival</title>
+<title>Web Designing Test</title>
 <style>
 body{
-margin:0;
-background:black;
-color:white;
 font-family:Arial;
+background:#111;
+color:white;
 text-align:center;
 }
-
-#loginPage{
-margin-top:100px;
-}
-
 input{
-padding:10px;
-margin:10px;
-width:200px;
+padding:8px;
+margin:5px;
 }
-
 button{
 padding:10px 20px;
+margin-top:10px;
 cursor:pointer;
 }
-
-canvas{
+.hidden{display:none;}
+.question{
 background:#222;
-border:2px solid white;
-margin-top:20px;
+padding:10px;
+margin:10px;
+border-radius:5px;
+text-align:left;
 }
 </style>
 </head>
@@ -37,124 +32,97 @@ margin-top:20px;
 <body>
 
 <div id="loginPage">
-<h2>Login</h2>
-<input type="text" id="username" placeholder="Username"><br>
-<input type="password" id="password" placeholder="Password"><br>
-<button onclick="login()">Submit</button>
-<button onclick="resetForm()">Reset</button>
+<h1>Log In</h1>
+<input type="text" id="name" placeholder="Enter Full Name"><br>
+<input type="text" id="dob" placeholder="DD-MM-YYYY"><br>
+<button onclick="validateLogin()">Submit</button>
 <p id="msg"></p>
 </div>
 
-<div id="gamePage" style="display:none;">
-<h2>🔥 PUBG Survival Game 🔥</h2>
-<p>Move: Arrow Keys | Shoot: Space</p>
-<canvas id="gameCanvas" width="400" height="500"></canvas>
-<p id="info"></p>
-<button onclick="restartGame()">Restart</button>
+<div id="testPage" class="hidden">
+<h2>Web Designing OMR Test</h2>
+<form id="quizForm"></form>
+<button onclick="submitTest()">Submit Test</button>
+<p id="result"></p>
 </div>
 
 <script>
-function login(){
-let u=document.getElementById("username").value.trim().toLowerCase();
-let p=document.getElementById("password").value.trim();
+let answers=[
+1,2,3,0,1,2,3,0,1,2,
+3,0,1,2,3,0,1,2,3,0,
+1,2,3,0,1
+];
 
-if(u==="harshit" && p==="6394"){
-document.getElementById("loginPage").style.display="none";
-document.getElementById("gamePage").style.display="block";
-startGame();
-}else{
-document.getElementById("msg").innerHTML="Wrong Username or Password ❌";
+function validateLogin(){
+let name=document.getElementById("name").value.trim();
+let dob=document.getElementById("dob").value.trim();
+
+let namePattern=/^[A-Z][a-z]+(\s[A-Z][a-z]+)*$/;
+let dobPattern=/^\d{2}-\d{2}-\d{4}$/;
+
+if(!namePattern.test(name)){
+document.getElementById("msg").innerHTML="Name must start with Capital letters and no numbers!";
+return;
+}
+
+if(!dobPattern.test(dob)){
+document.getElementById("msg").innerHTML="DOB format must be DD-MM-YYYY";
+return;
+}
+
+let parts=dob.split("-");
+let birthYear=parseInt(parts[2]);
+let currentYear=new Date().getFullYear();
+let age=currentYear-birthYear;
+
+if(age<15){
+document.getElementById("msg").innerHTML="Age must be 15+";
+return;
+}
+
+document.getElementById("loginPage").classList.add("hidden");
+document.getElementById("testPage").classList.remove("hidden");
+generateQuestions();
+}
+
+function generateQuestions(){
+let form=document.getElementById("quizForm");
+for(let i=1;i<=25;i++){
+form.innerHTML+=`
+<div class="question">
+<p>${i}. What is HTML?</p>
+<label><input type="radio" name="q${i}" value="0"> Programming Language</label><br>
+<label><input type="radio" name="q${i}" value="1"> Markup Language</label><br>
+<label><input type="radio" name="q${i}" value="2"> Database</label><br>
+<label><input type="radio" name="q${i}" value="3"> Operating System</label>
+</div>
+`;
 }
 }
 
-function resetForm(){
-document.getElementById("username").value="";
-document.getElementById("password").value="";
-}
-
-let canvas=document.getElementById("gameCanvas");
-let ctx=canvas.getContext("2d");
-
-let player={x:180,y:400,width:40,height:40,health:100};
-let bullets=[];
-let enemies=[];
+function submitTest(){
 let score=0;
-let gameInterval;
+let correct=0;
+let wrong=0;
 
-function startGame(){
-document.addEventListener("keydown",movePlayer);
-gameInterval=setInterval(updateGame,30);
+for(let i=1;i<=25;i++){
+let selected=document.querySelector(`input[name="q${i}"]:checked`);
+if(selected){
+if(parseInt(selected.value)===answers[i-1]){
+score+=4;
+correct++;
+}else{
+wrong++;
 }
-
-function movePlayer(e){
-if(e.key==="ArrowLeft") player.x-=15;
-if(e.key==="ArrowRight") player.x+=15;
-if(e.key==="ArrowUp") player.y-=15;
-if(e.key==="ArrowDown") player.y+=15;
-if(e.key===" ") bullets.push({x:player.x+15,y:player.y});
-}
-
-function updateGame(){
-ctx.clearRect(0,0,400,500);
-
-ctx.fillStyle="blue";
-ctx.fillRect(player.x,player.y,player.width,player.height);
-
-for(let i=0;i<bullets.length;i++){
-bullets[i].y-=10;
-ctx.fillStyle="yellow";
-ctx.fillRect(bullets[i].x,bullets[i].y,5,10);
-}
-
-if(Math.random()<0.03){
-enemies.push({
-x:Math.random()*360,
-y:0,
-width:40,
-height:40
-});
-}
-
-for(let i=0;i<enemies.length;i++){
-enemies[i].y+=3;
-ctx.fillStyle="red";
-ctx.fillRect(enemies[i].x,enemies[i].y,40,40);
-
-if(enemies[i].y>500){
-player.health-=10;
-enemies.splice(i,1);
-}
-
-for(let j=0;j<bullets.length;j++){
-if(bullets[j] &&
-bullets[j].x < enemies[i].x+40 &&
-bullets[j].x+5 > enemies[i].x &&
-bullets[j].y < enemies[i].y+40 &&
-bullets[j].y+10 > enemies[i].y){
-enemies.splice(i,1);
-bullets.splice(j,1);
-score++;
-break;
-}
+}else{
+wrong++;
 }
 }
 
-document.getElementById("info").innerHTML=
-"Health: "+player.health+" | Score: "+score;
-
-if(player.health<=0){
-clearInterval(gameInterval);
-alert("Game Over! Score: "+score);
-}
-}
-
-function restartGame(){
-player.health=100;
-score=0;
-bullets=[];
-enemies=[];
-clearInterval(gameInterval);
-startGame();
+document.getElementById("result").innerHTML=
+"Correct: "+correct+
+" | Wrong: "+wrong+
+" | Score: "+score+"/100";
 }
 </script>
 
