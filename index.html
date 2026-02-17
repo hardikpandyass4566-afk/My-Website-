@@ -3,222 +3,160 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Harshit Pro Portfolio</title>
+<title>Login + Mini Games</title>
 
 <style>
 body{
 margin:0;
-font-family:Arial, sans-serif;
+font-family:Arial;
 background:#0f2027;
 color:white;
-scroll-behavior:smooth;
-}
-
-header{
-height:100vh;
-display:flex;
-flex-direction:column;
-justify-content:center;
-align-items:center;
-background:linear-gradient(to right,#2c5364,#203a43,#0f2027);
 text-align:center;
 }
-
-header h1{
-font-size:50px;
+.container{
+margin-top:100px;
+}
+input{
+padding:10px;
 margin:10px;
-}
-
-.typing{
-color:#00f2fe;
-font-size:22px;
-}
-
-button{
-padding:10px 25px;
 border:none;
-background:#00f2fe;
-border-radius:30px;
-cursor:pointer;
-margin-top:20px;
+border-radius:5px;
 }
-
+button{
+padding:10px 20px;
+border:none;
+border-radius:5px;
+background:#00f2fe;
+cursor:pointer;
+}
 button:hover{
 background:#ff5733;
 color:white;
 }
-
-nav{
-background:#111;
-padding:10px;
-text-align:center;
-position:sticky;
-top:0;
-}
-
-nav a{
-color:white;
-margin:15px;
-text-decoration:none;
-font-weight:bold;
-}
-
-nav a:hover{
-color:#00f2fe;
-}
-
-.section{
-padding:60px;
-text-align:center;
-}
-
-.skills{
-width:80%;
-margin:auto;
-}
-
-.bar{
-background:#333;
-border-radius:20px;
-margin:15px 0;
-}
-
-.bar div{
-padding:10px;
-border-radius:20px;
-}
-
-.html{width:90%;background:#ff5733;}
-.css{width:80%;background:#3498db;}
-.js{width:70%;background:#f1c40f;}
-
-.slider{
-width:80%;
-margin:auto;
-overflow:hidden;
-border-radius:10px;
-}
-
-.slides{
-display:flex;
-animation:slide 9s infinite;
-}
-
-.slides img{
-width:100%;
-}
-
-@keyframes slide{
-0%{transform:translateX(0);}
-33%{transform:translateX(-100%);}
-66%{transform:translateX(-200%);}
-100%{transform:translateX(0);}
-}
-
-.card-container{
-display:flex;
-justify-content:center;
-flex-wrap:wrap;
-gap:20px;
-}
-
-.card{
+.hidden{display:none;}
+.game-box{
+margin:20px;
+padding:20px;
 background:#1c1c1c;
-width:250px;
-padding:20px;
 border-radius:10px;
-transition:0.4s;
-}
-
-.card:hover{
-transform:scale(1.05);
-}
-
-footer{
-background:#111;
-padding:20px;
-text-align:center;
 }
 </style>
 </head>
 
 <body>
 
-<nav>
-<a href="#home">Home</a>
-<a href="#skills">Skills</a>
-<a href="#projects">Projects</a>
-<a href="#contact">Contact</a>
-</nav>
-
-<header id="home">
-<h1>Harshit Singh</h1>
-<div class="typing" id="typing"></div>
-<button onclick="hire()">Hire Me</button>
-</header>
-
-<div class="section" id="skills">
-<h2>My Skills</h2>
-<div class="skills">
-<div class="bar"><div class="html">HTML 90%</div></div>
-<div class="bar"><div class="css">CSS 80%</div></div>
-<div class="bar"><div class="js">JavaScript 70%</div></div>
-</div>
+<!-- LOGIN PAGE -->
+<div id="loginPage" class="container">
+<h1>Login Page</h1>
+<input type="text" id="username" placeholder="Username"><br>
+<input type="password" id="password" placeholder="Password"><br>
+<button onclick="login()">Submit</button>
+<button onclick="resetForm()">Reset</button>
+<p id="message"></p>
 </div>
 
-<div class="section">
-<h2>Image Slider</h2>
-<div class="slider">
-<div class="slides">
-<img src="https://via.placeholder.com/800x300/ff5733/ffffff?text=Project+1">
-<img src="https://via.placeholder.com/800x300/3498db/ffffff?text=Project+2">
-<img src="https://via.placeholder.com/800x300/f1c40f/ffffff?text=Project+3">
-</div>
-</div>
+<!-- GAME PAGE -->
+<div id="gamePage" class="hidden">
+
+<h1>Welcome Harshit 🎮</h1>
+
+<!-- GAME 1 Guess Number -->
+<div class="game-box">
+<h2>Game 1: Guess Number (1-10)</h2>
+<input type="number" id="guess">
+<button onclick="checkGuess()">Guess</button>
+<p id="result1"></p>
 </div>
 
-<div class="section" id="projects">
-<h2>Projects</h2>
-<div class="card-container">
-<div class="card"><h3>Calculator</h3><p>JavaScript based calculator</p></div>
-<div class="card"><h3>Portfolio</h3><p>Modern responsive portfolio</p></div>
-<div class="card"><h3>School Website</h3><p>Full responsive design</p></div>
-</div>
+<!-- GAME 2 Counter -->
+<div class="game-box">
+<h2>Game 2: Click Counter</h2>
+<p id="count">0</p>
+<button onclick="increase()">Click Me</button>
 </div>
 
-<div class="section" id="contact">
-<h2>Contact Me</h2>
-<form onsubmit="return send()">
-<input type="text" placeholder="Your Name" required><br><br>
-<input type="email" placeholder="Your Email" required><br><br>
-<button type="submit">Send</button>
-</form>
+<!-- GAME 3 Rock Paper Scissors -->
+<div class="game-box">
+<h2>Game 3: Rock Paper Scissors</h2>
+<button onclick="rps('rock')">Rock</button>
+<button onclick="rps('paper')">Paper</button>
+<button onclick="rps('scissors')">Scissors</button>
+<p id="result3"></p>
 </div>
 
-<footer>
-<p>© 2026 Harshit Pro Portfolio</p>
-</footer>
+<!-- GAME 4 Math Quiz -->
+<div class="game-box">
+<h2>Game 4: Math Quiz (5 + 3 = ?)</h2>
+<input type="number" id="mathAns">
+<button onclick="checkMath()">Submit</button>
+<p id="result4"></p>
+</div>
+
+</div>
 
 <script>
-const text="Web Developer | Designer | Student 🚀";
-let i=0;
-function typing(){
-if(i<text.length){
-document.getElementById("typing").innerHTML+=text.charAt(i);
-i++;
-setTimeout(typing,100);
-}
-}
-typing();
 
-function hire(){
-alert("Thanks for visiting my website 😎");
+function login(){
+let user=document.getElementById("username").value;
+let pass=document.getElementById("password").value;
+
+if(user==="Harshit" && pass==="6394"){
+document.getElementById("loginPage").style.display="none";
+document.getElementById("gamePage").style.display="block";
+}else{
+document.getElementById("message").innerHTML="Wrong Username or Password ❌";
+}
 }
 
-function send(){
-alert("Message Sent Successfully ✅");
-return false;
+function resetForm(){
+document.getElementById("username").value="";
+document.getElementById("password").value="";
+document.getElementById("message").innerHTML="";
 }
+
+let random=Math.floor(Math.random()*10)+1;
+function checkGuess(){
+let guess=document.getElementById("guess").value;
+if(guess==random){
+document.getElementById("result1").innerHTML="Correct 🎉";
+}else{
+document.getElementById("result1").innerHTML="Try Again ❌";
+}
+}
+
+let count=0;
+function increase(){
+count++;
+document.getElementById("count").innerHTML=count;
+}
+
+function rps(user){
+let choices=["rock","paper","scissors"];
+let comp=choices[Math.floor(Math.random()*3)];
+if(user===comp){
+document.getElementById("result3").innerHTML="Draw 😐";
+}
+else if(
+(user==="rock" && comp==="scissors")||
+(user==="paper" && comp==="rock")||
+(user==="scissors" && comp==="paper")
+){
+document.getElementById("result3").innerHTML="You Win 🎉";
+}
+else{
+document.getElementById("result3").innerHTML="Computer Wins 🤖";
+}
+}
+
+function checkMath(){
+let ans=document.getElementById("mathAns").value;
+if(ans==8){
+document.getElementById("result4").innerHTML="Correct ✅";
+}else{
+document.getElementById("result4").innerHTML="Wrong ❌";
+}
+}
+
 </script>
 
 </body>
