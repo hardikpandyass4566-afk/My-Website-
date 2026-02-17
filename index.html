@@ -1,46 +1,43 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Ultimate Games Hub</title>
-
+<title>PUBG Style Survival</title>
 <style>
 body{
 margin:0;
-font-family:Arial;
-background:#111;
+background:black;
 color:white;
+font-family:Arial;
 text-align:center;
 }
-input,button{
-padding:8px;
-margin:5px;
-border:none;
-border-radius:5px;
+
+#loginPage{
+margin-top:100px;
 }
+
+input{
+padding:10px;
+margin:10px;
+width:200px;
+}
+
 button{
-background:#00f2fe;
+padding:10px 20px;
 cursor:pointer;
 }
-button:hover{
-background:#ff5733;
-color:white;
-}
-.hidden{display:none;}
+
 canvas{
 background:#222;
-margin-top:10px;
 border:2px solid white;
+margin-top:20px;
 }
 </style>
 </head>
 
 <body>
 
-<!-- LOGIN -->
 <div id="loginPage">
-<h1>Login</h1>
+<h2>Login</h2>
 <input type="text" id="username" placeholder="Username"><br>
 <input type="password" id="password" placeholder="Password"><br>
 <button onclick="login()">Submit</button>
@@ -48,32 +45,23 @@ border:2px solid white;
 <p id="msg"></p>
 </div>
 
-<!-- GAME PAGE -->
-<div id="gamePage" class="hidden">
-<h1>Welcome Harshit 🎮</h1>
-
-<h2>🚗 Car Racing Game</h2>
-<canvas id="carGame" width="300" height="400"></canvas>
-<p>Use Left & Right Arrow Keys</p>
-
-<h2>🔫 Shooting Game</h2>
-<canvas id="shootGame" width="300" height="400"></canvas>
-<p>Click to shoot the moving target</p>
-
+<div id="gamePage" style="display:none;">
+<h2>🔥 PUBG Survival Game 🔥</h2>
+<p>Move: Arrow Keys | Shoot: Space</p>
+<canvas id="gameCanvas" width="400" height="500"></canvas>
+<p id="info"></p>
+<button onclick="restartGame()">Restart</button>
 </div>
 
 <script>
-
-/* LOGIN SYSTEM */
 function login(){
-let u=document.getElementById("username").value;
-let p=document.getElementById("password").value;
+let u=document.getElementById("username").value.trim().toLowerCase();
+let p=document.getElementById("password").value.trim();
 
-if(u==="Harshit" && p==="6394"){
+if(u==="harshit" && p==="6394"){
 document.getElementById("loginPage").style.display="none";
 document.getElementById("gamePage").style.display="block";
-startCarGame();
-startShootGame();
+startGame();
 }else{
 document.getElementById("msg").innerHTML="Wrong Username or Password ❌";
 }
@@ -82,79 +70,92 @@ document.getElementById("msg").innerHTML="Wrong Username or Password ❌";
 function resetForm(){
 document.getElementById("username").value="";
 document.getElementById("password").value="";
-document.getElementById("msg").innerHTML="";
 }
 
-/* CAR RACING GAME */
-let carCanvas=document.getElementById("carGame");
-let ctx=carCanvas.getContext("2d");
-let carX=130;
-let obstacleY=0;
-let obstacleX=Math.random()*250;
+let canvas=document.getElementById("gameCanvas");
+let ctx=canvas.getContext("2d");
 
-function startCarGame(){
-setInterval(updateCarGame,30);
+let player={x:180,y:400,width:40,height:40,health:100};
+let bullets=[];
+let enemies=[];
+let score=0;
+let gameInterval;
+
+function startGame(){
+document.addEventListener("keydown",movePlayer);
+gameInterval=setInterval(updateGame,30);
 }
 
-function updateCarGame(){
-ctx.clearRect(0,0,300,400);
+function movePlayer(e){
+if(e.key==="ArrowLeft") player.x-=15;
+if(e.key==="ArrowRight") player.x+=15;
+if(e.key==="ArrowUp") player.y-=15;
+if(e.key==="ArrowDown") player.y+=15;
+if(e.key===" ") bullets.push({x:player.x+15,y:player.y});
+}
 
-ctx.fillStyle="red";
-ctx.fillRect(carX,350,40,40);
+function updateGame(){
+ctx.clearRect(0,0,400,500);
 
+ctx.fillStyle="blue";
+ctx.fillRect(player.x,player.y,player.width,player.height);
+
+for(let i=0;i<bullets.length;i++){
+bullets[i].y-=10;
 ctx.fillStyle="yellow";
-ctx.fillRect(obstacleX,obstacleY,40,40);
-
-obstacleY+=5;
-if(obstacleY>400){
-obstacleY=0;
-obstacleX=Math.random()*250;
+ctx.fillRect(bullets[i].x,bullets[i].y,5,10);
 }
 
-if(carX<obstacleX+40 &&
-carX+40>obstacleX &&
-350<obstacleY+40 &&
-350+40>obstacleY){
-alert("Game Over 🚗");
-obstacleY=0;
-}
-}
-
-document.addEventListener("keydown",function(e){
-if(e.key==="ArrowLeft" && carX>0){carX-=15;}
-if(e.key==="ArrowRight" && carX<260){carX+=15;}
+if(Math.random()<0.03){
+enemies.push({
+x:Math.random()*360,
+y:0,
+width:40,
+height:40
 });
-
-/* SHOOTING GAME */
-let shootCanvas=document.getElementById("shootGame");
-let sctx=shootCanvas.getContext("2d");
-let targetX=0;
-
-function startShootGame(){
-setInterval(updateShootGame,30);
-shootCanvas.addEventListener("click",shoot);
 }
 
-function updateShootGame(){
-sctx.clearRect(0,0,300,400);
-sctx.fillStyle="lime";
-sctx.beginPath();
-sctx.arc(targetX,200,20,0,Math.PI*2);
-sctx.fill();
-targetX+=3;
-if(targetX>300) targetX=0;
+for(let i=0;i<enemies.length;i++){
+enemies[i].y+=3;
+ctx.fillStyle="red";
+ctx.fillRect(enemies[i].x,enemies[i].y,40,40);
+
+if(enemies[i].y>500){
+player.health-=10;
+enemies.splice(i,1);
 }
 
-function shoot(e){
-let rect=shootCanvas.getBoundingClientRect();
-let mouseX=e.clientX-rect.left;
-let mouseY=e.clientY-rect.top;
-
-if(Math.abs(mouseX-targetX)<20 && Math.abs(mouseY-200)<20){
-alert("Hit 🎯");
+for(let j=0;j<bullets.length;j++){
+if(bullets[j] &&
+bullets[j].x < enemies[i].x+40 &&
+bullets[j].x+5 > enemies[i].x &&
+bullets[j].y < enemies[i].y+40 &&
+bullets[j].y+10 > enemies[i].y){
+enemies.splice(i,1);
+bullets.splice(j,1);
+score++;
+break;
+}
 }
 }
 
+document.getElementById("info").innerHTML=
+"Health: "+player.health+" | Score: "+score;
+
+if(player.health<=0){
+clearInterval(gameInterval);
+alert("Game Over! Score: "+score);
+}
+}
+
+function restartGame(){
+player.health=100;
+score=0;
+bullets=[];
+enemies=[];
+clearInterval(gameInterval);
+startGame();
+}
 </script>
 
 </body>
