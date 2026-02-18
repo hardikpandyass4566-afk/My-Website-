@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SBI Front Page</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            background-color: #003366; /* SBI dark blue */
+            color: white;
+            padding: 15px;
+            text-align: center;
+        }
+        nav {
+            background-color: #0066cc; /* lighter blue */
+            overflow: hidden;
+        }
+        nav a {
+            float: left;
+            display: block;
+            color: white;
+            padding: 12px 20px;
+            text-decoration: none;
+        }
+        nav a:hover {
+            background-color: #004080;
+        }
+        .banner {
+            width: 100%;
+            height: 300px;
+            background-image: url('sbi-banner.jpg'); /* Replace with your image */
+            background-size: cover;
+            background-position: center;
+        }
+        .login-form {
+            max-width: 400px;
+            margin: 30px auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+        }
+        .login-form h2 {
+            text-align: center;
+            color: #003366;
+        }
+        .login-form input[type="text"], 
+        .login-form input[type="password"] {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+        .login-form input[type="submit"] {
+            width: 100%;
+            padding: 10px;
+            background-color: #003366;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .login-form input[type="submit"]:hover {
+            background-color: #0055a5;
+        }
+        footer {
+            background-color: #003366;
+            color: white;
+            text-align: center;
+            padding: 10px;
+            margin-top: 30px;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>State Bank of India</h1>
+    </header>
+
+    <nav>
+        <a href="#">Home</a>
+        <a href="#">Personal Banking</a>
+        <a href="#">Corporate Banking</a>
+        <a href="#">Loans</a>
+        <a href="#">Contact Us</a>
+    </nav>
+
+    <div class="banner"></div>
+
+    <div class="login-form">
+        <h2>Internet Banking Login</h2>
+        <form>
+            <label for="username">Username:</label>
+            <input type="text" id="username" name="username" placeholder="Enter your username">
+            
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" placeholder="Enter your password">
+            
+            <input type="submit" value="Login">
+        </form>
+    </div>
+
+    <footer>
+        &copy; 2026 State Bank of India. All rights reserved.
+    </footer>
+
+</body>
+</html>
