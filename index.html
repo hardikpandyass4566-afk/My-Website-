@@ -1,130 +1,114 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<title>Web Designing Test</title>
-<style>
-body{
-font-family:Arial;
-background:#111;
-color:white;
-text-align:center;
-}
-input{
-padding:8px;
-margin:5px;
-}
-button{
-padding:10px 20px;
-margin-top:10px;
-cursor:pointer;
-}
-.hidden{display:none;}
-.question{
-background:#222;
-padding:10px;
-margin:10px;
-border-radius:5px;
-text-align:left;
-}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SBI Front Page</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            background-color: #003366; /* SBI dark blue */
+            color: white;
+            padding: 15px;
+            text-align: center;
+        }
+        nav {
+            background-color: #0066cc; /* lighter blue */
+            overflow: hidden;
+        }
+        nav a {
+            float: left;
+            display: block;
+            color: white;
+            padding: 12px 20px;
+            text-decoration: none;
+        }
+        nav a:hover {
+            background-color: #004080;
+        }
+        .banner {
+            width: 100%;
+            height: 300px;
+            background-image: url('sbi-banner.jpg'); /* Replace with your image */
+            background-size: cover;
+            background-position: center;
+        }
+        .login-form {
+            max-width: 400px;
+            margin: 30px auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+        }
+        .login-form h2 {
+            text-align: center;
+            color: #003366;
+        }
+        .login-form input[type="text"], 
+        .login-form input[type="password"] {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+        .login-form input[type="submit"] {
+            width: 100%;
+            padding: 10px;
+            background-color: #003366;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .login-form input[type="submit"]:hover {
+            background-color: #0055a5;
+        }
+        footer {
+            background-color: #003366;
+            color: white;
+            text-align: center;
+            padding: 10px;
+            margin-top: 30px;
+        }
+    </style>
 </head>
-
 <body>
 
-<div id="loginPage">
-<h1>Log In</h1>
-<input type="text" id="name" placeholder="Enter Full Name"><br>
-<input type="text" id="dob" placeholder="DD-MM-YYYY"><br>
-<button onclick="validateLogin()">Submit</button>
-<p id="msg"></p>
-</div>
+    <header>
+        <h1>State Bank of India</h1>
+    </header>
 
-<div id="testPage" class="hidden">
-<h2>Web Designing OMR Test</h2>
-<form id="quizForm"></form>
-<button onclick="submitTest()">Submit Test</button>
-<p id="result"></p>
-</div>
+    <nav>
+        <a href="#">Home</a>
+        <a href="#">Personal Banking</a>
+        <a href="#">Corporate Banking</a>
+        <a href="#">Loans</a>
+        <a href="#">Contact Us</a>
+    </nav>
 
-<script>
-let answers=[
-1,2,3,0,1,2,3,0,1,2,
-3,0,1,2,3,0,1,2,3,0,
-1,2,3,0,1
-];
+    <div class="banner"></div>
 
-function validateLogin(){
-let name=document.getElementById("name").value.trim();
-let dob=document.getElementById("dob").value.trim();
+    <div class="login-form">
+        <h2>Internet Banking Login</h2>
+        <form>
+            <label for="username">Username:</label>
+            <input type="text" id="username" name="username" placeholder="Enter your username">
+            
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" placeholder="Enter your password">
+            
+            <input type="submit" value="Login">
+        </form>
+    </div>
 
-let namePattern=/^[A-Z][a-z]+(\s[A-Z][a-z]+)*$/;
-let dobPattern=/^\d{2}-\d{2}-\d{4}$/;
-
-if(!namePattern.test(name)){
-document.getElementById("msg").innerHTML="Name must start with Capital letters and no numbers!";
-return;
-}
-
-if(!dobPattern.test(dob)){
-document.getElementById("msg").innerHTML="DOB format must be DD-MM-YYYY";
-return;
-}
-
-let parts=dob.split("-");
-let birthYear=parseInt(parts[2]);
-let currentYear=new Date().getFullYear();
-let age=currentYear-birthYear;
-
-if(age<15){
-document.getElementById("msg").innerHTML="Age must be 15+";
-return;
-}
-
-document.getElementById("loginPage").classList.add("hidden");
-document.getElementById("testPage").classList.remove("hidden");
-generateQuestions();
-}
-
-function generateQuestions(){
-let form=document.getElementById("quizForm");
-for(let i=1;i<=25;i++){
-form.innerHTML+=`
-<div class="question">
-<p>${i}. What is HTML?</p>
-<label><input type="radio" name="q${i}" value="0"> Programming Language</label><br>
-<label><input type="radio" name="q${i}" value="1"> Markup Language</label><br>
-<label><input type="radio" name="q${i}" value="2"> Database</label><br>
-<label><input type="radio" name="q${i}" value="3"> Operating System</label>
-</div>
-`;
-}
-}
-
-function submitTest(){
-let score=0;
-let correct=0;
-let wrong=0;
-
-for(let i=1;i<=25;i++){
-let selected=document.querySelector(`input[name="q${i}"]:checked`);
-if(selected){
-if(parseInt(selected.value)===answers[i-1]){
-score+=4;
-correct++;
-}else{
-wrong++;
-}
-}else{
-wrong++;
-}
-}
-
-document.getElementById("result").innerHTML=
-"Correct: "+correct+
-" | Wrong: "+wrong+
-" | Score: "+score+"/100";
-}
-</script>
+    <footer>
+        &copy; 2026 State Bank of India. All rights reserved.
+    </footer>
 
 </body>
 </html>
