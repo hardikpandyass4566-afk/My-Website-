@@ -1,114 +1,158 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SBI Front Page</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-        }
-        header {
-            background-color: #003366; /* SBI dark blue */
-            color: white;
-            padding: 15px;
-            text-align: center;
-        }
-        nav {
-            background-color: #0066cc; /* lighter blue */
-            overflow: hidden;
-        }
-        nav a {
-            float: left;
-            display: block;
-            color: white;
-            padding: 12px 20px;
-            text-decoration: none;
-        }
-        nav a:hover {
-            background-color: #004080;
-        }
-        .banner {
-            width: 100%;
-            height: 300px;
-            background-image: url('sbi-banner.jpg'); /* Replace with your image */
-            background-size: cover;
-            background-position: center;
-        }
-        .login-form {
-            max-width: 400px;
-            margin: 30px auto;
-            padding: 20px;
-            border: 1px solid #ccc;
-            border-radius: 10px;
-        }
-        .login-form h2 {
-            text-align: center;
-            color: #003366;
-        }
-        .login-form input[type="text"], 
-        .login-form input[type="password"] {
-            width: 100%;
-            padding: 10px;
-            margin: 10px 0;
-            border-radius: 5px;
-            border: 1px solid #ccc;
-        }
-        .login-form input[type="submit"] {
-            width: 100%;
-            padding: 10px;
-            background-color: #003366;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        .login-form input[type="submit"]:hover {
-            background-color: #0055a5;
-        }
-        footer {
-            background-color: #003366;
-            color: white;
-            text-align: center;
-            padding: 10px;
-            margin-top: 30px;
-        }
-    </style>
+<title>Typing Guru - Free Online Typing Test</title>
+<meta name="description" content="Typing Guru - Free English typing test with WPM and accuracy calculator.">
+<meta name="keywords" content="typing guru, typing test, english typing practice">
+
+<style>
+body{
+background:#111;
+color:white;
+font-family:Arial;
+text-align:center;
+margin:0;
+}
+.container{
+width:90%;
+max-width:900px;
+margin:auto;
+padding:20px;
+}
+select,button{
+padding:8px;
+margin:5px;
+}
+#textDisplay{
+background:#222;
+padding:15px;
+min-height:120px;
+border-radius:5px;
+margin-top:15px;
+font-size:20px;
+text-align:left;
+}
+#inputBox{
+width:100%;
+padding:10px;
+margin-top:10px;
+font-size:20px;
+}
+.correct{color:white;}
+.wrong{color:red;}
+.controls{margin-top:10px;}
+</style>
 </head>
+
 <body>
 
-    <header>
-        <h1>State Bank of India</h1>
-    </header>
+<div class="container">
+<h1>⌨ Typing Guru</h1>
 
-    <nav>
-        <a href="#">Home</a>
-        <a href="#">Personal Banking</a>
-        <a href="#">Corporate Banking</a>
-        <a href="#">Loans</a>
-        <a href="#">Contact Us</a>
-    </nav>
+<div class="controls">
+<select id="mode">
+<option value="lower">Small Letters</option>
+<option value="upper">Capital Letters</option>
+<option value="mixed">Mixed Letters</option>
+</select>
 
-    <div class="banner"></div>
+<select id="time">
+<option value="120">2 Minutes</option>
+<option value="300">5 Minutes</option>
+<option value="600">10 Minutes</option>
+<option value="900">15 Minutes</option>
+<option value="1800">30 Minutes</option>
+</select>
 
-    <div class="login-form">
-        <h2>Internet Banking Login</h2>
-        <form>
-            <label for="username">Username:</label>
-            <input type="text" id="username" name="username" placeholder="Enter your username">
-            
-            <label for="password">Password:</label>
-            <input type="password" id="password" name="password" placeholder="Enter your password">
-            
-            <input type="submit" value="Login">
-        </form>
-    </div>
+<button onclick="startTest()">Start</button>
+<button onclick="changeFont(2)">A+</button>
+<button onclick="changeFont(-2)">A-</button>
+</div>
 
-    <footer>
-        &copy; 2026 State Bank of India. All rights reserved.
-    </footer>
+<div id="timer">Time: 0</div>
+<div id="wpm">WPM: 0</div>
+<div id="accuracy">Accuracy: 0%</div>
+
+<div id="textDisplay"></div>
+<textarea id="inputBox" placeholder="Start typing here..." disabled></textarea>
+
+</div>
+
+<script>
+let text="";
+let timeLeft=0;
+let timerInterval;
+let fontSize=20;
+
+function generateText(mode){
+let sample="Typing Guru is the best platform to improve your typing speed and accuracy. Practice daily to become faster and more accurate in English typing.";
+
+if(mode==="upper") return sample.toUpperCase();
+if(mode==="lower") return sample.toLowerCase();
+return sample;
+}
+
+function startTest(){
+let mode=document.getElementById("mode").value;
+timeLeft=parseInt(document.getElementById("time").value);
+text=generateText(mode);
+
+document.getElementById("textDisplay").innerHTML="";
+for(let char of text){
+document.getElementById("textDisplay").innerHTML+=`<span>${char}</span>`;
+}
+
+document.getElementById("inputBox").value="";
+document.getElementById("inputBox").disabled=false;
+document.getElementById("inputBox").focus();
+
+clearInterval(timerInterval);
+timerInterval=setInterval(updateTimer,1000);
+}
+
+function updateTimer(){
+if(timeLeft<=0){
+clearInterval(timerInterval);
+document.getElementById("inputBox").disabled=true;
+return;
+}
+timeLeft--;
+document.getElementById("timer").innerHTML="Time: "+timeLeft+"s";
+}
+
+document.getElementById("inputBox").addEventListener("input",function(){
+let input=this.value;
+let spans=document.querySelectorAll("#textDisplay span");
+let correct=0;
+
+for(let i=0;i<spans.length;i++){
+if(input[i]==null){
+spans[i].className="";
+}
+else if(input[i]===spans[i].innerText){
+spans[i].className="correct";
+correct++;
+}
+else{
+spans[i].className="wrong";
+}
+}
+
+let words=input.trim().split(" ").length;
+let minutes=(parseInt(document.getElementById("time").value)-timeLeft)/60;
+let wpm=Math.round(words/minutes || 0);
+let accuracy=Math.round((correct/input.length)*100 || 0);
+
+document.getElementById("wpm").innerHTML="WPM: "+wpm;
+document.getElementById("accuracy").innerHTML="Accuracy: "+accuracy+"%";
+});
+
+function changeFont(size){
+fontSize+=size;
+document.getElementById("textDisplay").style.fontSize=fontSize+"px";
+document.getElementById("inputBox").style.fontSize=fontSize+"px";
+}
+</script>
 
 </body>
 </html>
