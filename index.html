@@ -1,158 +1,219 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Typing Guru - Free Online Typing Test</title>
-<meta name="description" content="Typing Guru - Free English typing test with WPM and accuracy calculator.">
-<meta name="keywords" content="typing guru, typing test, english typing practice">
-
+<title>3D Subway Style Game</title>
 <style>
-body{
-background:#111;
+body { margin:0; overflow:hidden; background:black; }
+#ui {
+position:absolute;
+top:10px;
+left:10px;
 color:white;
+font-size:20px;
 font-family:Arial;
-text-align:center;
-margin:0;
 }
-.container{
-width:90%;
-max-width:900px;
-margin:auto;
-padding:20px;
-}
-select,button{
-padding:8px;
-margin:5px;
-}
-#textDisplay{
-background:#222;
-padding:15px;
-min-height:120px;
-border-radius:5px;
-margin-top:15px;
-font-size:20px;
-text-align:left;
-}
-#inputBox{
+#gameover{
+position:absolute;
+top:40%;
 width:100%;
-padding:10px;
-margin-top:10px;
-font-size:20px;
+text-align:center;
+color:white;
+font-size:40px;
+display:none;
 }
-.correct{color:white;}
-.wrong{color:red;}
-.controls{margin-top:10px;}
+button{
+font-size:20px;
+padding:10px;
+margin-top:20px;
+}
+.controls{
+position:absolute;
+bottom:20px;
+width:100%;
+text-align:center;
+}
+.controls button{
+width:80px;
+height:50px;
+font-size:18px;
+}
 </style>
 </head>
-
 <body>
 
-<div class="container">
-<h1>⌨ Typing Guru</h1>
+<div id="ui">Score: 0</div>
+<div id="gameover">
+GAME OVER<br>
+<button onclick="restart()">Restart</button>
+</div>
 
 <div class="controls">
-<select id="mode">
-<option value="lower">Small Letters</option>
-<option value="upper">Capital Letters</option>
-<option value="mixed">Mixed Letters</option>
-</select>
-
-<select id="time">
-<option value="120">2 Minutes</option>
-<option value="300">5 Minutes</option>
-<option value="600">10 Minutes</option>
-<option value="900">15 Minutes</option>
-<option value="1800">30 Minutes</option>
-</select>
-
-<button onclick="startTest()">Start</button>
-<button onclick="changeFont(2)">A+</button>
-<button onclick="changeFont(-2)">A-</button>
+<button onclick="moveLeft()">⬅</button>
+<button onclick="jump()">⬆</button>
+<button onclick="slide()">⬇</button>
+<button onclick="moveRight()">➡</button>
 </div>
 
-<div id="timer">Time: 0</div>
-<div id="wpm">WPM: 0</div>
-<div id="accuracy">Accuracy: 0%</div>
-
-<div id="textDisplay"></div>
-<textarea id="inputBox" placeholder="Start typing here..." disabled></textarea>
-
-</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 
 <script>
-let text="";
-let timeLeft=0;
-let timerInterval;
-let fontSize=20;
+let scene = new THREE.Scene();
+let camera = new THREE.PerspectiveCamera(75,window.innerWidth/window.innerHeight,0.1,1000);
+let renderer = new THREE.WebGLRenderer();
+renderer.setSize(window.innerWidth,window.innerHeight);
+document.body.appendChild(renderer.domElement);
 
-function generateText(mode){
-let sample="Typing Guru is the best platform to improve your typing speed and accuracy. Practice daily to become faster and more accurate in English typing.";
+scene.background = new THREE.Color(0x111111);
 
-if(mode==="upper") return sample.toUpperCase();
-if(mode==="lower") return sample.toLowerCase();
-return sample;
+let light = new THREE.PointLight(0xffffff,1);
+light.position.set(0,10,10);
+scene.add(light);
+
+// Ground
+let ground = new THREE.Mesh(
+new THREE.PlaneGeometry(20,500),
+new THREE.MeshPhongMaterial({color:0x333333})
+);
+ground.rotation.x = -Math.PI/2;
+scene.add(ground);
+
+// Player
+let player = new THREE.Mesh(
+new THREE.BoxGeometry(1,2,1),
+new THREE.MeshPhongMaterial({color:0x00ff00})
+);
+player.position.y=1;
+scene.add(player);
+
+camera.position.set(0,5,8);
+camera.lookAt(player.position);
+
+let lanes=[-3,0,3];
+let currentLane=1;
+let speed=0.3;
+let score=0;
+let jumping=false;
+let sliding=false;
+let velocityY=0;
+
+let obstacles=[];
+let coins=[];
+
+function createObstacle(){
+let train=new THREE.Mesh(
+new THREE.BoxGeometry(2,3,4),
+new THREE.MeshPhongMaterial({color:0xff0000})
+);
+train.position.z=-200;
+train.position.x=lanes[Math.floor(Math.random()*3)];
+train.position.y=1.5;
+scene.add(train);
+obstacles.push(train);
 }
 
-function startTest(){
-let mode=document.getElementById("mode").value;
-timeLeft=parseInt(document.getElementById("time").value);
-text=generateText(mode);
-
-document.getElementById("textDisplay").innerHTML="";
-for(let char of text){
-document.getElementById("textDisplay").innerHTML+=`<span>${char}</span>`;
+function createCoin(){
+let coin=new THREE.Mesh(
+new THREE.TorusGeometry(0.5,0.2,8,16),
+new THREE.MeshPhongMaterial({color:0xffff00})
+);
+coin.position.z=-200;
+coin.position.x=lanes[Math.floor(Math.random()*3)];
+coin.position.y=2;
+scene.add(coin);
+coins.push(coin);
 }
 
-document.getElementById("inputBox").value="";
-document.getElementById("inputBox").disabled=false;
-document.getElementById("inputBox").focus();
+setInterval(createObstacle,2000);
+setInterval(createCoin,1500);
 
-clearInterval(timerInterval);
-timerInterval=setInterval(updateTimer,1000);
-}
-
-function updateTimer(){
-if(timeLeft<=0){
-clearInterval(timerInterval);
-document.getElementById("inputBox").disabled=true;
-return;
-}
-timeLeft--;
-document.getElementById("timer").innerHTML="Time: "+timeLeft+"s";
-}
-
-document.getElementById("inputBox").addEventListener("input",function(){
-let input=this.value;
-let spans=document.querySelectorAll("#textDisplay span");
-let correct=0;
-
-for(let i=0;i<spans.length;i++){
-if(input[i]==null){
-spans[i].className="";
-}
-else if(input[i]===spans[i].innerText){
-spans[i].className="correct";
-correct++;
-}
-else{
-spans[i].className="wrong";
-}
-}
-
-let words=input.trim().split(" ").length;
-let minutes=(parseInt(document.getElementById("time").value)-timeLeft)/60;
-let wpm=Math.round(words/minutes || 0);
-let accuracy=Math.round((correct/input.length)*100 || 0);
-
-document.getElementById("wpm").innerHTML="WPM: "+wpm;
-document.getElementById("accuracy").innerHTML="Accuracy: "+accuracy+"%";
+// Controls
+document.addEventListener("keydown",e=>{
+if(e.key==="ArrowLeft") moveLeft();
+if(e.key==="ArrowRight") moveRight();
+if(e.key==="ArrowUp") jump();
+if(e.key==="ArrowDown") slide();
 });
 
-function changeFont(size){
-fontSize+=size;
-document.getElementById("textDisplay").style.fontSize=fontSize+"px";
-document.getElementById("inputBox").style.fontSize=fontSize+"px";
+function moveLeft(){
+if(currentLane>0) currentLane--;
+player.position.x=lanes[currentLane];
 }
-</script>
+function moveRight(){
+if(currentLane<2) currentLane++;
+player.position.x=lanes[currentLane];
+}
+function jump(){
+if(!jumping){
+jumping=true;
+velocityY=0.25;
+}
+}
+function slide(){
+if(!sliding){
+sliding=true;
+player.scale.y=0.5;
+setTimeout(()=>{
+player.scale.y=1;
+sliding=false;
+},500);
+}
+}
 
+function gameOver(){
+document.getElementById("gameover").style.display="block";
+renderer.setAnimationLoop(null);
+}
+
+function restart(){
+location.reload();
+}
+
+function animate(){
+requestAnimationFrame(animate);
+
+// Jump physics
+if(jumping){
+player.position.y+=velocityY;
+velocityY-=0.01;
+if(player.position.y<=1){
+player.position.y=1;
+jumping=false;
+}
+}
+
+// Move obstacles
+obstacles.forEach((o,i)=>{
+o.position.z+=speed;
+if(o.position.z>10){
+scene.remove(o);
+obstacles.splice(i,1);
+}
+if(Math.abs(o.position.z-player.position.z)<2 &&
+Math.abs(o.position.x-player.position.x)<2 &&
+!sliding && player.position.y<2){
+gameOver();
+}
+});
+
+// Move coins
+coins.forEach((c,i)=>{
+c.rotation.x+=0.1;
+c.position.z+=speed;
+if(Math.abs(c.position.z-player.position.z)<2 &&
+Math.abs(c.position.x-player.position.x)<2){
+scene.remove(c);
+coins.splice(i,1);
+score+=10;
+document.getElementById("ui").innerHTML="Score: "+score;
+}
+});
+
+speed+=0.0005;
+
+renderer.render(scene,camera);
+}
+
+animate();
+</script>
 </body>
 </html>
